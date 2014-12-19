@@ -1,0 +1,341 @@
+{% extends "main.html" %} {% block content %}
+<!-- tekijät: Heta Rekilä, Heli Kallio, Esko Niinimäki -->
+
+<div class="col-md-4">
+    <!--kokoava-->
+    <div class="panel panel-default">
+        <div class="panel-body ">
+            Olen täytettä Navigointipalkin alla.
+        </div>
+    </div>
+    <!-- Tässä alkaa kaikkein uloin suljettava paneeli sisäkkäisten suljettavien paneelien toteutukseen -->
+
+    <body>
+        <div class="container col-md-12 panel-groupOma">
+            <div class='panel panel-info'>
+                <div class='panel-heading panelHeading'>
+                    <h4 class='panel-title'>Tilastot aihealueittain</h4>
+                </div>
+                <div class='panel-body panelBody' style='display:none;' id="OuterPanel">
+                    <div class="btn-group-vertical panel-group" role="group" aria-label="...">
+                        <!-- Nyt aletaan käymään puuta läpi: jos dictin sisältä löytyy dict -> tehdään uusi suljettava paneeli, jonka nimi on key. Jos ei ole enää dictiä, jäljelle vain teksti. -->
+                        <!--Tästä alkaa puun läpikäynti -->
+                        {%- for key, value in tree|dictsort recursive %}
+                        <!-- Jos alla on vielä dictejä, laitetaan labeliksi ja jatketaan dictin sisälle -->
+                        {%- if value is mapping -%}
+                        <!-- Sisällä dict, joten luodaan uusi sisäkkäinen paneli -->
+                        <div class='panel panel-info'>
+                            <div class='panel-heading panelHeading'>
+                                <h4 class='panel-title'>{{ key }}</h4>
+                            </div>
+                            <div class='panel-body panelBody' style='display:none;'>
+                                <div class="btn-group-vertical panel-group" role="group" aria-label="...">
+                                    <ul>
+                                        {{ loop(value|dictsort) }}
+                                        <!-- suljetaan sisäkkäinen paneeli, lapset on nyt lisätty -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <!-- Jos alla ei dictejä, ollaan lopussa ja tehdään button, jonka klikkaus avaisi linkit-->
+                        <li>
+                            <button type="button" class="btn" id="koenappi" onclick="lataa('{{value}}','{{key}}')" style="white-space: normal">{{ key }}</button>
+                        </li>
+                        {% endif %} {%- endfor %}
+                        <!-- uloimman paneelin panelin sulku -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</div>
+<!-- kokoava-->
+<div class="col-md-8" align="center">
+    <div class="panel-body" style="height:60px">
+    </div>
+    <div id="etusivuOhje" class="col-md-12" align="left">
+        <h1>TilastokeskusPiirtoX2000</h1>
+        <h3>Ai miksi juuri aina ABC?</h3>
+        <p>Tilastopalikkasovelluksemme pyörii flaskin päällä.</p>
+        <h3>Onko tästä hyötyä?</h3>
+        <p>Käppyrät ovat aina hyödyllisiä ja tilastopalikkakikkare on täällä sitä varten.</p>
+        <h3>Ketkä tämän tekivät?</h3>
+        <p>Opiskelijat</p>
+        <h3>Kiitokset</h3>
+        <p>Ryhmälle </p>
+        <h3>Data</h3>
+        <p>Ohjelma käyttää Tilastokeskuksen pc-axis-tietokantojen uusimpia julkistettuja tiedostoja.</p>
+    </div>
+
+    <div id="tkanta_nimi"></div>
+
+    <form class="btn-group" data-toggle="buttons" id="x-akselinapit" align="left" width="500px"></form>
+    <div id="uli" align="center" class="Otsakkeet"></div>
+    <div id="piirtoNappi">
+        <button id="silmukka" type="button" class="btn btn-default btn-lg" data-loading-text="haetaan dataa..." autocomplete="off" style="visibility: hidden">Piirrä graafi</button>
+    </div>
+    <form id="esitysmuotoForm" style="visibility: hidden">
+        <Label>Miten tilastot piirretään?</Label>
+        <input type="checkbox" name="kayravalinta" id="esitys_lines" checked>Käyrät
+        <input type="checkbox" name="kayravalinta" id="esitys_bars">Palkit
+        <input type="checkbox" name="kayravalinta" id="esitys_points">Pisteet</input>
+        <input type="checkbox" name="kayravalinta" id="esitys_log">Logaritminen</input>
+    </form>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-2" align="left" class="jumbo" style="align=right; height:250px;">
+                <div class="col-md-12" id="y_yksikko"></div>
+            </div>
+            <div class="col-md-8" id="placeholder" style="height: 350px; position: relative;"></div>
+            <div class="col-md-2" id="legendContainer" />
+        </div>
+    </div>
+
+    <p id="choices" style="float:right; width:135px;"></p>
+    
+
+</div>
+
+
+
+{% endblock %} {% block head %} {{super()}} {{fixes.ie8()}}
+<script type="text/javascript">
+    // kun html-dokumetti on valmis
+    // puun avaamisen ja sulkemisen hoitaminen
+    $(document).ready(function() {
+        $('.panelHeading').click(function(e) {
+            e.stopPropagation();
+            var $sliderContent = $(this).next('.panelBody'),
+                $panelBody = $(this).closest('.panel-group').find('.panel-body');
+            $panelBody.not($sliderContent.slideToggle("fast", changeInnerState)).find('.panel-body:visible').addBack().slideUp();
+        });
+    });
+
+
+    // paneelien sulkemiseen liittyvä funktio
+    function changeInnerState() {
+        var $this = $(this);
+        if ($this.is(':hidden')) $this.find('.panel-body').slideUp();
+    }
+</script>
+<script>
+    $('#esitysmuotoForm input').on('change', function() {
+        alert($('input[name=kayravalinta]:checked', '#esitysmuotoForm').val());
+    })
+</script>
+
+<script>
+    var x_akseli;
+    var last_valid_selection = null;
+
+    // jos x-akselia vaihdetaan, puretaan selectien rajoitukset ja nollataan valinnat
+    // aina lisätään/vaihdetaan x-akseli
+    function xNappiPainettu(lahettaja) {
+        if (x_akseli != null) {
+            pura_rajoitukset();
+            nollaa_valinnat();
+        }
+        x_akseli = lahettaja;
+    }
+
+
+    // haetaan kaikki selectit ja poistetaan niihin liittyvä eventhandler
+    function pura_rajoitukset_ja_nollaa() {
+        var selectit = document.getElementsByTagName('select');
+        for (i = 0; i < selectit.length; i++) {
+            var haku_id = '[id="' + selectit[i].id + '"]';
+            $("#uli").off("change", haku_id, lisaa_rajoitus);
+            // nollataan myös valinnat
+            var optionit = document.getElementById(selectit[i].id).options;
+            for (j = 0; j < optionit.length; j++) {
+                optionit[j].selected = false;
+            }
+        }
+    }
+
+
+    // rajoitetaan parametrina tullutta selectiä
+    // etsitään muut kuin rajoitettava select ja katsotaan, onko niillä useampaa valintaa
+    // jos on, rajoitetaan nykyistä yhdellä valinnalla
+    function rajoita(lista_selecteista, rajoitettava_select) {
+        var koko_id = '[id="' + rajoitettava_select.id + '"]';
+        var ei_rajoiteta = true; // muuttuja, joka kertoo, pitääkö käsiteltävää selectiä rajoittaa
+        var j = 0;
+        while (j < lista_selecteista.length && ei_rajoiteta) {
+            if (lista_selecteista[j].id == rajoitettava_select.id) j++;
+            else {
+                // lasketaan kuinka monta optionia on valittu selectistä
+                var s = document.getElementById(lista_selecteista[j].id);
+                var options = s.options,
+
+                    count = 0;
+                for (k = 0; k < options.length; k++) {
+                    if (options[k].selected) count++;
+                }
+                if (count > 1) ei_rajoiteta = false;
+                j++;
+            }
+        }
+
+
+        // jos pitää rajoittaa nykyistä selectiä
+        if (!ei_rajoiteta) {
+            $("#uli").on("change", koko_id, lisaa_rajoitus);
+        }
+        // jos selecteistä valittu vain yksi jokaisesta, rajoitukset pois
+        var yhteensa = [];
+        for (i = 0; i < lista_selecteista.length; i++) {
+            yhteensa[i] = $('[id="' + lista_selecteista[i].id + '"] option:selected').length;
+        }
+        var l = 0;
+        var kokonaissumma = 0;
+        while (l < yhteensa.length) {
+            if (yhteensa[l] > 1) break;
+            kokonaissumma++;
+            l++;
+        }
+        if (kokonaissumma == yhteensa.length) pura_rajoitukset();
+    }
+
+    // puretaan rajoitukset selecteistä
+    function pura_rajoitukset() {
+        var selectit = document.getElementsByTagName('select');
+        for (i = 0; i < selectit.length; i++) {
+            var haku_id = '[id="' + selectit[i].id + '"]';
+            $("#uli").off("change", haku_id, lisaa_rajoitus);
+        }
+    }
+
+    // eventhandler, joka rajoittaa siihen liittyvää selectin valintojan määrää
+    function lisaa_rajoitus() {
+        if ($(this).val().length > 1) {
+            alert('Voit valita vain yhden alkion!');
+            //if (last_valid_selection == null) return;
+            $(this).val(last_valid_selection);
+        } else {
+            last_valid_selection = $(this).val();
+        }
+    }
+
+    // nollataan kaikkien selectien valinnat
+    // asetetaan jokainen option valitsemattomaksi
+    function nollaa_valinnat() {
+        var selectit = document.getElementsByTagName('select');
+        for (i = 0; i < selectit.length; i++) {
+            var optionit = document.getElementById(selectit[i].id).options;
+            for (j = 0; j < optionit.length; j++) {
+                optionit[j].selected = false;
+            }
+        }
+    }
+
+
+    // mitä tapahtuu, kun klikataan selectin sisällä olevaa optionia
+    // jos option on muualla kuin x-akselia vastaavassa selectissä, rajoitetaan sen selectiä
+    function rajaa_selectia(lahettaja) {
+        // jos on klikattu optionia ennen kuin x-akselia on valittu
+        if (x_akseli == null) {
+
+            alert('Valitse x-akseli ensin!');
+            nollaa_valinnat();
+            return;
+        }
+        var x = x_akseli;
+        var x_id = x.id.substring(0, x.id.length - 1);
+        // haetaan ensin kaikki selectit ulin avulla
+        var selectit = document.getElementById("uli").childNodes; // whitespacea ei näytä olevan, 1. elementti 0. indeksissä jne.
+        var selectit_ilman_x = [];
+        // etsitään muut selectit kuin x-akselia vastaava
+        for (i = 0; i < selectit.length; i++) {
+            if (selectit[i].id != x_id) selectit_ilman_x.push(selectit[i]);
+        }
+
+        // etsitään lähettäjän (optionin) idn perusteella select, jonka lapsi lähettäjä on
+        var lahettajan_id = '[id="' + lahettaja.id + '"]';
+        var select_jossa_klikattu_option;
+        for (i = 0; i < selectit_ilman_x.length; i++) {
+            var select_id = '[id="' + selectit_ilman_x[i].id + '"]';
+            if ($(select_id).children(lahettajan_id).length > 0) {
+                select_jossa_klikattu_option = selectit_ilman_x[i];
+            }
+        }
+        if (select_jossa_klikattu_option == null) return;
+        // rajoitetaan selectiä
+        rajoita(selectit_ilman_x, select_jossa_klikattu_option);
+    }
+</script>
+
+<!-- latausnapin toiminta -->
+<script>
+    // poistetaan mahdolliset selectit ja ladataan uusi tiedosto
+    // luodaan uudet selectit ja nappulat
+    function lataa(osoite, nimi) {
+        $("#etusivuOhje").empty();
+
+        x_akseli = null;
+        // poista eka valitut
+        $("select").remove();
+
+        $(".TiedostonNimi").remove();
+
+        $.post("/lataus", {
+            linkki: osoite
+        }, function(palautusdata) {
+            var data = JSON.parse(palautusdata);
+            var items = [];
+            var xnapit = [];
+            i = 0; //apumuuttuja taulukon val-arvojen läpikäyntiin
+            j = 0; //apumuuttuja taulukon key-arvojen läpikäyntiin
+
+            var keyt = [];
+
+            //Aletaan käymään läpi jsonia, jokainen key ja val
+            //Luodaan x-akselille valintanapit ja hakulistat aineistoon
+            $.each(data, function(key, val) {
+
+                //luodaan napit x-akselin valitsemiseen
+                xnapit.push('<label id="' + key + '1" title="' + key + '"onclick="xNappiPainettu(this)" class="btn btn-primary" style="width: 140px;"><input id="' + key + '2" class="btn btn-primary"  type="radio" name="nappinappinappi" value="' + key + '">' + key + '</input></label>'); // inputin id:hen lisätty 2, jotta eroaa selectin id:stä
+
+
+                //aloitetaan aina keyn kohdalla uusi valintalista
+                items.push("<select id=\"" + key + "\" multiple=\"multiple\" style=\"width: 140px;\">");
+
+                //käydään läpi keyn kaikki valit ja lisätään listaan
+                $.each(val, function() {
+                    items.push('<option title="' + val[i] + '" id="' + val[i] + '" onclick="rajaa_selectia(this)" value="' + val[i] + "\">" + val[i] + "</option>");
+                    i++;
+                });
+                //lista kii
+                items.push("</select>");
+
+                j++;
+                i = 0;
+            });
+
+
+            //poistetaan vanhat napit ja lisätään uudet
+            $("#x-akselinapit").empty().append(xnapit);
+
+            //document.getElementById("x-akselinapit").innerHTML = debugdata;
+            $("#uli").append(items.join(""));
+
+            // vaihdetaan uusimman haetun tietokannan nimi näkyviin
+            $("#tkanta_nimi").empty().append("<h3>" + nimi + "</h3>");
+
+        });
+
+
+        //Suljetaan tilastonvalitsemispaneelit
+        $('#OuterPanel').slideUp()
+        var $sliderContent = $('#OuterPanel').next('.panelBody'),
+            $panelBody = $('#OuterPanel').closest('.panel-group').find('.panel-body');
+        $panelBody.not($sliderContent.slideToggle("fast", changeInnerState)).find('.panel-body:visible').addBack().slideUp();
+
+        // Tuodaan esille käyrän esityksen valintaboxit
+        document.getElementById("esitysmuotoForm").style.visibility = "visible";
+        document.getElementById("silmukka").style.visibility = "visible";
+
+    }
+</script>
+{% endblock %}

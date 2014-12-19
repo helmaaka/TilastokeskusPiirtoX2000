@@ -1,0 +1,23 @@
+.rotate {
+float: left;
+vertical-align: top;
+
+/* Safari, Chrome */
+-webkit-transform: rotate(-90deg);
+
+/* Firefox */
+-moz-transform: rotate(-90deg);
+
+/* IE */
+-ms-transform: rotate(-90deg);
+
+/* Opera */
+-o-transform: rotate(-90deg);
+
+/* Older versions of IE */
+filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+
+/* CSS3 standard as defined here: http://www.w3.org/TR/css3-transforms/ */
+transform: rotate(-90deg);
+
+}

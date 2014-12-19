@@ -1,0 +1,71 @@
+{% extends "bootstrap/base.html" %} {% import "bootstrap/fixes.html" as fixes %} {% block navbar %}
+<!-- tekijät: Heta Rekilä -->
+<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">TilastokeskusPiirtoX2000</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+            <li><a onclick="nayta_ohjeet()">Ohjeet</a>
+            </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+
+{% endblock %} {% block content %} {% endblock %} {% block head %} {{super()}} {{fixes.ie8()}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="/static/js/bootstrap.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/jquery-1.11.0.js"></script>
+<script src="/static/js/jquery.easing.min.js"></script>
+
+<script src="../static/flot/jquery.flot.js"></script>
+<script language="javascript" type="text/javascript" src="/static/flot/excanvas.min.js"></script>
+<script language="javascript" type="text/javascript" src="/static/flot/jquery.js"></script>
+<script language="javascript" type="text/javascript" src="/static/flot/jquery.flot.js"></script>
+<script language="javascript" type="text/javascript" src="/static/flot/jquery.flot.time.js"></script>
+<!--<script type="text/javascript" src="/static/test.js"></script> -->
+<script type="text/javascript" src="/static/nappi.js"></script>
+<script type="text/javascript" src="/static/piirtonappi.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-multiselect.js"></script>
+<!--<script type="text/javascript" src="/static/ohje.js"></script>-->
+
+
+<script src="../static/js/bootstrap.js"></script>
+<script src="../static/js/bootstrap.min.js"></script>
+<script src="../static/js/jquery-1.11.0.js"></script>
+<script src="../static/js/jquery.easing.min.js"></script>
+<script src="../static/flot/jquery.flot.js"></script>
+<script language="javascript" type="text/javascript" src="../static/flot/excanvas.min.js"></script>
+<script language="javascript" type="text/javascript" src="../static/flot/jquery.js"></script>
+<script language="javascript" type="text/javascript" src="../static/flot/jquery.flot.js"></script>
+<script language="javascript" type="text/javascript" src="../static/flot/jquery.flot.time.js"></script>
+<script language="javascript" type="text/javascript" src="../static/flot/jquery.flot.orderBars.js"></script>
+
+<script>
+    // näytetään käyttäjälle ohjeet, miten ohjelmaa käytetään
+    function nayta_ohjeet() {
+        var teksti1 = "Valitse ensin 'Tilastot aihealueittain' -valikosta tiedosto, jonka pohjalta haluat piirtää.\r\n\r\n";
+        var teksti2 = "Ruudulle ilmestyy painikkeet, joista pitää valita x-akseli. Valitse yksi näistä. Näiden\r\n";
+        var teksti3 = "alapuolella ovat listat, joilla valitaan piirrettävä data.\r\nGraafin tyyliä on myös mahdollista muuttaa.\r\n\r\n";
+        var teksti4 = "'Piirrä graafi' -painikkeesta painamalla ohjelma piirtää graafin.";
+        alert(teksti1 + teksti2 + teksti3 + teksti4);
+    }
+</script>
+
+<link rel="stylesheet" href="/static/css/bootstrap-multiselect.css" type="text/css" />
+<link rel="stylesheet" href="/static/css/kaantaminen.css" type="text/css" />
+{% endblock %}
