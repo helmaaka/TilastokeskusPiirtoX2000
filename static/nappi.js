@@ -35,17 +35,15 @@ $(silmukka).click(function() {
         if (currentOption1.checked === true) {
             valittu = currentOption1.id;
             break;
-        } else {
-            valittu = valittuXAkseliKohta.id;
-        }
+        } 
     }
+    if (valittu === null) {return;}
     // korjataan valintamerkkijono
     valittu = valittu.slice(0, -1);
 
 
-
     // lopetetaan funktion kulkeminen jos yht‰‰n mit‰‰n ei ole valittuna
-    if (valittu === "enablePositio" || valittu === "esitys_line") {
+    if (valittu !== "enablePositio" || valittu === "esitys_line") {
         alert("Mit‰‰n ei ole valittuna, joten j‰tet‰‰n piirt‰m‰tt‰." + " Valitse ensiksi x-akseli, sitten piirrett√§v√§t datat");
         return;
     }
@@ -240,28 +238,28 @@ $(silmukka).click(function() {
             // luodaan tooltip-div, joka n‰ytet‰‰n tarvittaessa
             $("<div id='tooltip'></div>").css({
                 position: "absolute",
-				display: "none",
-				border: "1px solid #fdd",
-				padding: "2px",
-				"background-color": "#fee",
-				opacity: 0.80
-			}).appendTo("body");
-			
-			
-			// lis‰t‰‰n kuuntelija josko ollaan kuvaajan sellaseissa kohdassa ett‰ tarvitaan tooltippi‰
-			$("#placeholder").bind("plothover", function(event, pos, item){
-				if (item) {
-						var y = item.datapoint[1];
-						var kayran_nimi = item.series.label;
-					$("#tooltip").html(y).css({
-						top: item.pageY + 5,
-						left: item.pageX + 5
-					}).fadeIn(200);
-					var legend_labelit = document.getElementsByClassName("legendLabel");
-				} else {
-					$("#tooltip").hide();
-				}
-			});
+                display: "none",
+                border: "1px solid #fdd",
+                padding: "2px",
+                "background-color": "#fee",
+                opacity: 0.80
+            }).appendTo("body");
+            
+            
+            // lis‰t‰‰n kuuntelija josko ollaan kuvaajan sellaseissa kohdassa ett‰ tarvitaan tooltippi‰
+            $("#placeholder").bind("plothover", function(event, pos, item){
+                if (item) {
+                        var y = item.datapoint[1];
+                        var kayran_nimi = item.series.label;
+                    $("#tooltip").html(y).css({
+                        top: item.pageY + 5,
+                        left: item.pageX + 5
+                    }).fadeIn(200);
+                    var legend_labelit = document.getElementsByClassName("legendLabel");
+                } else {
+                    $("#tooltip").hide();
+                }
+            });
             
         });
 });
