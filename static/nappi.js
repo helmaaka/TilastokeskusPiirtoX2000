@@ -46,7 +46,7 @@ $(silmukka).click(function() {
 
     // lopetetaan funktion kulkeminen jos yht‰‰n mit‰‰n ei ole valittuna
     if (valittu === "enablePositio" || valittu === "esitys_line") {
-        alert("Mit‰‰n ei ole valittuna, joten j‰tet‰‰n piirt‰m‰tt‰." + " Valitse ensiksi x-akseli, sitten piirrett√§v√§t datat");
+        alert("Mit‰‰n ei ole valittuna, joten j‰tet‰‰n piirt‰m‰tt‰." + " Valitse ensiksi x-akseli, sitten piirrett‰v‰t datat");
         return;
     }
 
